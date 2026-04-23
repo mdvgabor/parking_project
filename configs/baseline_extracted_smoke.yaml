@@ -1,0 +1,32 @@
+experiment_name: baseline_resnet18
+seed: 42
+data:
+  archive_path: PKLot.tar
+  metadata_dir: data/metadata
+  extracted_root: data/extracted_smoke
+  image_size: 128
+  num_workers: 0
+  batch_size: 16
+  max_train_samples: 32
+  max_val_samples: 32
+  max_test_samples: 32
+  augmentation:
+    horizontal_flip_prob: 0.5
+    rotation_degrees: 10
+    brightness_jitter: 0.15
+    contrast_jitter: 0.15
+training:
+  epochs: 1
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  device: auto
+model:
+  backbone: simple_cnn
+  pretrained: false
+  num_classes: 2
+evaluation:
+  metrics:
+  - accuracy
+  - precision
+  - recall
+  - f1

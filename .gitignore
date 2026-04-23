@@ -1,0 +1,29 @@
+# macOS / local shell noise
+.DS_Store
+.Rhistory
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Large/raw dataset files
+PKLot.tar
+data/extracted*/
+data/metadata/train.csv
+data/metadata/val.csv
+data/metadata/test.csv
+
+# Model checkpoints and intermediate experiment artifacts
+outputs/**/*.pt
+outputs/baseline_smoke*/
+outputs/baseline_extracted_smoke/
+outputs/baseline_subset_4k/
+
+# Keep lightweight final results from the selected baseline experiment.
+!outputs/baseline_subset_1k/
+!outputs/baseline_subset_1k/metrics.json
+!outputs/baseline_subset_1k/robustness/
+!outputs/baseline_subset_1k/robustness/*.json
+!outputs/baseline_subset_1k/robustness/*.csv
+!outputs/baseline_subset_1k/system_output/
+!outputs/baseline_subset_1k/system_output/*.png

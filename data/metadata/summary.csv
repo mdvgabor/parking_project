@@ -1,0 +1,4 @@
+split,count,empty,occupied
+train,487093,250648,236445
+val,104374,53709,50665
+test,104384,53714,50670
