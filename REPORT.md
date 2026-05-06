@@ -18,7 +18,7 @@ The model we built receives an image of a single parking slot and outputs one of
 
 The main challenge was not defining the target label, but building a pipeline that remains accurate under different  conditions such as changing weather, different parking sites, and variations in lighting and viewpoint.
 
-We implemented as a full end-to-end workflow, which consisted of the following steps:
+We implemented a full end-to-end workflow, which consisted of the following steps:
 
 - dataset indexing and split generation
 - preprocessing and augmentation
