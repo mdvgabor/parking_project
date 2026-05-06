@@ -14,11 +14,13 @@ This project detects whether a parking space is `Empty` or `Occupied` using the 
 
 The repository currently includes:
 
-- `PKLot.tar`: raw dataset archive
 - `scripts/prepare_dataset.py`: dataset indexing and train/validation/test split generation
 - `scripts/extract_dataset.py`: optional extraction utility for faster file-based training
-- `configs/baseline.yaml`: baseline experiment configuration
+- `configs/baseline_subset_70_15_15.yaml`: final subset experiment configuration
 - `data/`: generated metadata files
+- `outputs/baseline_subset_70_15_15/`: final experiment metrics, robustness outputs, and system demo
+
+The raw `PKLot.tar` archive is not included in the final submission package. The submission keeps the code, metadata, final configuration, and final reported outputs needed to understand and reproduce the workflow when the dataset archive is available locally.
 
 ## Quick start
 
@@ -47,7 +49,22 @@ python3 scripts/extract_dataset.py \
 
 Then set `data.extracted_root: data/extracted` in the config to train from files instead of directly from the tar archive.
 
-## Planned next steps
+## Final experiment
 
-- Train a transfer-learning baseline
-- Add evaluation plots and a simple occupancy visualization
+The final reported subset experiment uses a reproducible `3000`-sample subset with the original split ratio preserved and semi-stratified by parking site and occupancy class:
+
+- train: `2100`
+- validation: `450`
+- test: `450`
+
+Main config:
+
+```bash
+configs/baseline_subset_70_15_15.yaml
+```
+
+Main outputs:
+
+- `outputs/baseline_subset_70_15_15/metrics.json`
+- `outputs/baseline_subset_70_15_15/robustness/summary.json`
+- `outputs/baseline_subset_70_15_15/system_output/occupancy_board.png`

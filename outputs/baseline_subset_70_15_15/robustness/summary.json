@@ -1,0 +1,63 @@
+{
+  "split": "test",
+  "overall": {
+    "count": 450,
+    "accuracy": 0.9866666666666667,
+    "precision": 0.9774774774774775,
+    "recall": 0.9954128440366973,
+    "f1": 0.9863636363636363,
+    "loss": 0.05872675751025478
+  },
+  "by_site": [
+    {
+      "count": 274,
+      "accuracy": 0.9927007299270073,
+      "precision": 0.984251968503937,
+      "recall": 1.0,
+      "f1": 0.9920634920634921,
+      "site": "PUC"
+    },
+    {
+      "count": 69,
+      "accuracy": 0.9565217391304348,
+      "precision": 0.9354838709677419,
+      "recall": 0.9666666666666667,
+      "f1": 0.9508196721311475,
+      "site": "UFPR04"
+    },
+    {
+      "count": 107,
+      "accuracy": 0.9906542056074766,
+      "precision": 0.984375,
+      "recall": 1.0,
+      "f1": 0.9921259842519685,
+      "site": "UFPR05"
+    }
+  ],
+  "by_weather": [
+    {
+      "count": 138,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "weather": "Cloudy"
+    },
+    {
+      "count": 75,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "weather": "Rainy"
+    },
+    {
+      "count": 237,
+      "accuracy": 0.9746835443037974,
+      "precision": 0.9615384615384616,
+      "recall": 0.9920634920634921,
+      "f1": 0.9765625,
+      "weather": "Sunny"
+    }
+  ]
+}

@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import csv
 import io
+import math
 import random
 import tarfile
+from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
@@ -71,10 +73,64 @@ class PKLotTarDataset(Dataset):
             reader = csv.DictReader(handle)
             samples = list(reader)
         if limit is not None:
-            rng = random.Random(self.seed)
-            rng.shuffle(samples)
-            samples = samples[:limit]
+            samples = self._semi_stratified_sample(samples, limit)
         return samples
+
+    def _semi_stratified_sample(
+        self,
+        samples: list[dict[str, str]],
+        limit: int,
+    ) -> list[dict[str, str]]:
+        if limit >= len(samples):
+            return samples
+
+        grouped: dict[tuple[str, str], list[dict[str, str]]] = defaultdict(list)
+        for sample in samples:
+            grouped[(sample["site"], sample["label_name"])].append(sample)
+
+        rng = random.Random(self.seed)
+        group_items: list[tuple[tuple[str, str], list[dict[str, str]]]] = []
+        allocations: dict[tuple[str, str], int] = {}
+        remainders: list[tuple[float, tuple[str, str]]] = []
+
+        total = len(samples)
+        assigned = 0
+        for key, items in grouped.items():
+            shuffled = items[:]
+            rng.shuffle(shuffled)
+            group_items.append((key, shuffled))
+
+            exact_share = limit * len(items) / total
+            base = min(len(items), math.floor(exact_share))
+            allocations[key] = base
+            assigned += base
+            remainders.append((exact_share - base, key))
+
+        remaining = limit - assigned
+        for _, key in sorted(remainders, key=lambda entry: entry[0], reverse=True):
+            if remaining <= 0:
+                break
+            capacity = len(grouped[key]) - allocations[key]
+            if capacity > 0:
+                allocations[key] += 1
+                remaining -= 1
+
+        if remaining > 0:
+            for key, items in sorted(grouped.items(), key=lambda entry: len(entry[1]), reverse=True):
+                if remaining <= 0:
+                    break
+                capacity = len(items) - allocations[key]
+                extra = min(capacity, remaining)
+                if extra > 0:
+                    allocations[key] += extra
+                    remaining -= extra
+
+        sampled: list[dict[str, str]] = []
+        for key, items in group_items:
+            sampled.extend(items[: allocations[key]])
+
+        rng.shuffle(sampled)
+        return sampled
 
     def _get_archive(self) -> tarfile.TarFile:
         if self._archive is None:

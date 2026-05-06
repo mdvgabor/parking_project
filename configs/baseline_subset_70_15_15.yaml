@@ -1,37 +1,33 @@
-experiment_name: baseline_resnet18
+experiment_name: baseline_subset_70_15_15
 seed: 42
-
 data:
   archive_path: PKLot.tar
   metadata_dir: data/metadata
-  extracted_root:
+  extracted_root: data/extracted_baseline_subset
   image_size: 128
   num_workers: 0
-  batch_size: 128
-  max_train_samples:
-  max_val_samples:
-  max_test_samples:
+  batch_size: 64
+  max_train_samples: 2100
+  max_val_samples: 450
+  max_test_samples: 450
   augmentation:
     horizontal_flip_prob: 0.5
     rotation_degrees: 10
     brightness_jitter: 0.15
     contrast_jitter: 0.15
-
 training:
-  epochs: 10
+  epochs: 5
   learning_rate: 0.001
   weight_decay: 0.0001
   device: auto
-  patience: 3
-
+  patience: 2
 model:
   backbone: simple_cnn
   pretrained: false
   num_classes: 2
-
 evaluation:
   metrics:
-    - accuracy
-    - precision
-    - recall
-    - f1
+  - accuracy
+  - precision
+  - recall
+  - f1
