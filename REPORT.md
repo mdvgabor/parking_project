@@ -16,7 +16,7 @@ The model we built receives an image of a single parking slot and outputs one of
 - `Empty`
 - `Occupied`
 
-The main challenge was not defining the target label, but building a pipeline that remains accurate under different  conditions such as changing weather, different parking sites, and variations in lighting and viewpoint.
+The main challenge was not defining the target label, but building a pipeline that remains accurate under different conditions such as changing weather, different parking sites, and variations in lighting and viewpoint.
 
 We implemented a full end-to-end workflow, which consisted of the following steps:
 
@@ -27,7 +27,7 @@ We implemented a full end-to-end workflow, which consisted of the following step
 - robustness analysis
 - visual system-level output
 
-The original PKLot segmented parking-slot dataset consists of around 700,000 labeled parking-slot images, while our available development machines were CPU-only. Because of this, the final reported experiment was carried out on a reproducible subset that preserved the 70/15/15 train/validation/test split that was used. The final subset was also semi-stratified by parking site and occupancy class to keep it more representative.
+The original PKLot segmented parking-slot dataset consists of around 700,000 labeled parking-slot images, while our available development machines were CPU-only. Because of this, the final reported experiment was carried out on a reproducible subset that preserved the 70/15/15 train/validation/test split. The final subset was also semi-stratified by parking site and occupancy class to keep it more representative.
 
 ## 2. Problem Formulation
 
@@ -148,15 +148,43 @@ The baseline model is a custom convolutional neural network designed to remain l
 
 ### 5.1 Structure
 
-The model contains:
+The implemented model contains:
 
-- 4 convolutional layers
+- 4 convolutional layers with channel sizes `3 -> 32 -> 64 -> 128 -> 256`
 - batch normalization after each convolution
 - ReLU nonlinearities
-- max-pooling for progressive spatial downsampling
+- max-pooling after the first three convolutional blocks for progressive spatial downsampling
 - adaptive average pooling
-- a fully connected classifier head
+- a fully connected classifier head with dimensions `256 -> 128 -> 2`
 - dropout regularization
+
+In code, the feature extractor is:
+
+1. `Conv2d(3, 32, kernel_size=3, padding=1)`
+2. `BatchNorm2d(32)`
+3. `ReLU(inplace=True)`
+4. `MaxPool2d(2)`
+5. `Conv2d(32, 64, kernel_size=3, padding=1)`
+6. `BatchNorm2d(64)`
+7. `ReLU(inplace=True)`
+8. `MaxPool2d(2)`
+9. `Conv2d(64, 128, kernel_size=3, padding=1)`
+10. `BatchNorm2d(128)`
+11. `ReLU(inplace=True)`
+12. `MaxPool2d(2)`
+13. `Conv2d(128, 256, kernel_size=3, padding=1)`
+14. `BatchNorm2d(256)`
+15. `ReLU(inplace=True)`
+16. `AdaptiveAvgPool2d((1, 1))`
+
+The classifier head is:
+
+1. `Flatten()`
+2. `Linear(256, 128)`
+3. `BatchNorm1d(128)`
+4. `ReLU(inplace=True)`
+5. `Dropout(p=0.3)`
+6. `Linear(128, 2)`
 
 Shortly, the model works as follows:
 
@@ -195,7 +223,7 @@ The model outputs 2 logits, one for each class. During training, `CrossEntropyLo
 
 ### 6.3 Model selection
 
-At the end of each epoch, the model was evaluated on the validation set. The best checkpoint was selected based on validation F1 score, not only raw accuracy. This is a good  because F1 balances precision and recall and it is more informative than accuracy alone when discussing classification quality.
+At the end of each epoch, the model was evaluated on the validation set. The best checkpoint was selected based on validation F1 score, not only raw accuracy. This is good because F1 balances precision and recall, and it is more informative than accuracy alone when discussing classification quality.
 
 ### 6.4 Early stopping
 
@@ -205,7 +233,7 @@ If validation performance stopped improving, early stopping prevents unnecessary
 
 ### 7.1 Validation performance during training
 
-The final  experiment produced the following validation metrics:
+The final experiment produced the following validation metrics:
 
 | Epoch | Validation Accuracy | Validation F1 |
 |---|---:|---:|
@@ -244,13 +272,13 @@ The results suggest:
 - the binary distinction between empty and occupied parking spaces is learnable with a relatively simple CNN
 - the training pipeline is stable and learns meaningful patterns, not random noise
 
-The very high recall show that the model is especially good at identifying occupied spots. Precision is also high, showing relatively few false positives.
+The very high recall shows that the model is especially good at identifying occupied spots. Precision is also high, showing relatively few false positives.
 
 ## 8. Robustness Analysis
 
 ### 8.1 Motivation
 
-A single overall test accuracy does not fully describe model behavior. A classifier can look strong on average while performing poorly under certain environmental conditions. To address this,  we included robustness analysis across:
+A single overall test accuracy does not fully describe model behavior. A classifier can look strong on average while performing poorly under certain environmental conditions. To address this, we included robustness analysis across:
 
 - parking site
 - weather condition
